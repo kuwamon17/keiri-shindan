@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>経理パーソナリティ診断</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.95;
+            line-height: 1.6;
+        }
+
+        .content {
+            padding: 40px 30px;
+        }
+
+        .intro {
+            background: #f8f9ff;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 35px;
+            border-left: 4px solid #667eea;
+        }
+
+        .intro h2 {
+            color: #333;
+            font-size: 20px;
+            margin-bottom: 12px;
+        }
+
+        .intro p {
+            color: #555;
+            line-height: 1.8;
+            margin-bottom: 10px;
+        }
+
+        .scale-guide {
+            display: flex;
+            justify-content: space-between;
+            background: #fff3cd;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            font-size: 13px;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .scale-guide span {
+            font-weight: 600;
+        }
+
+        .question-block {
+            margin-bottom: 35px;
+            padding: 25px;
+            background: #fafbff;
+            border-radius: 12px;
+            border: 1px solid #e8ecf7;
+            transition: all 0.3s ease;
+        }
+
+        .question-block:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+        }
+
+        .question-text {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 18px;
+            font-weight: 500;
+            line-height: 1.6;
+        }
+
+        .question-number {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 32px;
+            font-size: 14px;
+            font-weight: 700;
+            margin-right: 12px;
+        }
+
+        .options {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .option {
+            flex: 1;
+            position: relative;
+        }
+
+        .option input[type="radio"] {
+            display: none;
+        }
+
+        .option label {
+            display: block;
+            text-align: center;
+            padding: 12px 8px;
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+            font-weight: 500;
+            color: #666;
+        }
+
+        .option input[type="radio"]:checked + label {
+            background: #667eea;
+            border-color: #667eea;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .option label:hover {
+            border-color: #667eea;
+            transform: translateY(-1px);
+        }
+
+        .submit-container {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid #e8ecf7;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 18px 60px;
+            font-size: 18px;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 28px rgba(102, 126, 234, 0.4);
+        }
+
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .error-message {
+            background: #ffe6e6;
+            color: #c00;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border-left: 4px solid #c00;
+            display: none;
+        }
+
+        .result-section {
+            display: none;
+        }
+
+        .result-header {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 20px 20px 0 0;
+        }
+
+        .result-header h2 {
+            font-size: 28px;
+            margin-bottom: 15px;
+        }
+
+        .character-image {
+            width: 250px;
+            height: 250px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 6px solid white;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .character-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .character-emoji {
+            font-size: 120px;
+            line-height: 1;
+        }
+
+        .result-header .type-name {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .result-header .type-tagline {
+            font-size: 18px;
+            opacity: 0.95;
+            font-style: italic;
+        }
+
+        .result-content {
+            padding: 40px 30px;
+        }
+
+        .score-breakdown {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .score-item {
+            background: #f8f9ff;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            border: 2px solid #e8ecf7;
+        }
+
+        .score-item.top-score {
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            border-color: #667eea;
+        }
+
+        .score-item-label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .score-item-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .score-item-max {
+            font-size: 14px;
+            color: #999;
+        }
+
+        .result-section-box {
+            background: #fafbff;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            border-left: 4px solid #667eea;
+        }
+
+        .result-section-box h3 {
+            color: #333;
+            font-size: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .result-section-box p {
+            color: #555;
+            line-height: 1.8;
+            margin-bottom: 12px;
+        }
+
+        .result-section-box ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .result-section-box ul li {
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .result-section-box ul li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        .retry-btn {
+            display: block;
+            width: 100%;
+            max-width: 300px;
+            margin: 30px auto 0;
+            padding: 15px;
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .retry-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .image-note {
+            background: #fff3cd;
+            color: #856404;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-size: 13px;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .content {
+                padding: 30px 20px;
+            }
+
+            .options {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .scale-guide {
+                flex-direction: column;
+                gap: 5px;
+                text-align: center;
+            }
+
+            .character-image {
+                width: 200px;
+                height: 200px;
+            }
+
+            .character-emoji {
+                font-size: 100px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>経理パーソナリティ診断</h1>
+            <p>〜強みを活かすキャリアのヒント〜</p>
+        </div>
+
+        <div id="questionSection" class="content">
+            <div class="intro">
+                <h2>診断について</h2>
+                <p>経理部門で求められるスキルは多様です。正確性、分析力、コミュニケーション力、改善力、マネジメント力...どれも重要ですが、誰もがすべてを高いレベルで持っているわけではありません。</p>
+                <p>大切なのは、<strong>自分の強みを知り、それを活かせる場所で力を発揮すること</strong>。この診断で、あなたの経理パーソナリティと、強みを活かせるキャリアのヒントを見つけましょう。</p>
+                <p style="margin-top: 15px; font-size: 14px; color: #666;">※この診断は統計データに基づくものではなく、キャリアを考えるきっかけとしてご活用ください。</p>
+            </div>
+
+            <div class="scale-guide">
+                <span>1: 全く当てはまらない</span>
+                <span>2: あまり当てはまらない</span>
+                <span>3: どちらともいえない</span>
+                <span>4: やや当てはまる</span>
+                <span>5: 非常に当てはまる</span>
+            </div>
+
+            <form id="diagnosticForm">
+                <!-- 質問は同じなので省略 -->
+                <!-- Q1 (A) -->
+                <div class="question-block">
+                    <div class="question-text">
+                        <span class="question-number">1</span>
+                        ルーティンワークを着実にこなすことに、やりがいを感じる
+                    </div>
+                    <div class="options">
+                        <div class="option"><input type="radio" id="q1_1" name="q1" value="1" required><label for="q1_1">1</label></div>
+                        <div class="option"><input type="radio" id="q1_2" name="q1" value="2"><label for="q1_2">2</label></div>
+                        <div class="option"><input type="radio" id="q1_3" name="q1" value="3"><label for="q1_3">3</label></div>
+                        <div class="option"><input type="radio" id="q1_4" name="q1" value="4"><label for="q1_4">4</label></div>
+                        <div class="option"><input type="radio" id="q1_5" name="q1" value="5"><label for="q1_5">5</label></div>
+                    </div>
+                </div>
+
+                <div class="question-block">
+                    <div class="question-text">
+                        <span class="question-number">2</span>
+                        自分が扱っている数字が、会社のどんな取引や活動に繋がっているかを常に意識している
+                    </div>
+                    <div class="options">
+                        <div class="option"><input type="radio" id="q5_1" name="q5" value="1" required><label for="q5_1">1</label></div>
+                        <div class="option"><input type="radio" id="q5_2" name="q5" value="2"><label for="q5_2">2</label></div>
+                        <div class="option"><input type="radio" id="q5_3" name="q5" value="3"><label for="q5_3">3</label></div>
+                        <div class="option"><input type="radio" id="q5_4" name="q5" value="4"><label for="q5_4">4</label></div>
+                        <div class="option"><input type="radio" id="q5_5" name="q5" value="5"><label for="q5_5">5</label></div>
+                    </div>
+                </div>
+
+                <div class="question-block">
+                    <div class="question-text">
+                        <span class="question-number">3</span>
+                        他部署との連携やコミュニケーションを図ることに、ストレスを感じない
+                    </div>
+                    <div class="options">
+                        <div class="option"><input type="radio" id="q9_1" name="q9" value="1" required><label for="q9_1">1</label></div>
+                        <div class="option"><input type="radio" id="q9_2" name="q9" value="2"><label for="q9_2">2</label></div>
+                        <div class="option"><input type="radio" id="q9_3" name="q9" value="3"><label for="q9_3">3</label></div>
+                        <div class="option"><input type="radio" id="q9_4" name="q9" value="4"><label for="q9_4">4</label></div>
+                        <div class="option"><input type="radio" id="q9_5" name="q9" value="5"><label for="q9_5">5</label></div>
+                    </div>
+                </div>
+
+                <div class="question-block">
+                    <div class="question-text">
+                        <span class="question-number">4</span>
+                        現状の仕事内容や業務プロセスに改善余地がないか、常に考えるのが好きだ
+                    </div>
+                    <div class="options">
+                        <div class="option"><input type="radio" id="q12_1" name="q12" value="1" required><label for="q12_1">1</label></div>
+                        <div class="option"><input type="radio" id="q12_2" name="q12" value="2"><label for="q12_2">2</label></div>
+                        <div class="option"><input type="radio" id="q12_3" name="q12" value="3"><label for="q12_3">3</label></div>
+                        <div class="option"><input type="radio" id="q12_4" name="q12" value="4"><label for="q12_4">4</label></div>
+                        <div class="option"><input type="radio" id="q12_5" name="q12" value="5"><label for="q12_5">5</label></div>
+                    </div>
+                </div>
+
+                <div class="question-block">
+                    <div class="question-text">
+                        <span class="question-number">5</span>
+                        状況に応じて、ルーティン業務も新しいチャレンジも柔軟に対応できる
+                    </div>
+                    <div class="options">
+                        <div class="option"><input type="radio" id="q16_1" name="q16" value="1" required><label for="q16_1">1</label></div>
+                        <div class="option"><input type="radio" id="q16_2" name="q16" value="2"><label for="q16_2">2</label></div>
+                        <div class="option"><input type="radio" id="q16_3" name="q16" value="3"><label for="q16_3">3</label></div>
+                        <div class="option"><input type="radio" id="q16_4" name="q16" value="4"><label for="q16_4">4</label></div>
+                        <div class="option"><input type="radio" id="q16_5" name="q16" value="5"><label for="q16_5">5</label></div>
+                    </div>
+                </div>
+
+                <div class="question-block">
+                    <div class="question-text">
+                        <span class="question-number">6</span>
+                        自分の仕事では、ミスはゼロが当たり前だと考えて業務に取り組んでいる
+                    </div>
+                    <div class="options">
+                        <div class="option"><input type="radio" id="q2_1" name="q2" value="1" required><label for="q2_1">1</label></div>
+                        <div class="option"><input type="radio" id="q2_2" name="q2" value="2"><label for="q2_2">2</label></div>
+                        <div class="option"><input type="radio" id="q2_3" name="q2" value="3"><label for="q2_3">3</label></div>
+                        <div class="option"><input type="radio" id="q2_4" name="q2" value="4"><label for="q2_4">4</label></div>
+                        <div class="option"><input type="radio" id="q2_5" name="q2" value="5"><label for="q2_5">5</label></div>
+                    </div>
+                </div>
+
+                <div class="question-block">
+                    <div class="question-text">
+                        <span class="question-number">7</span>
+                        財務データから、社内や社外に対して新しい提案や提言をしたくなることが多い
+                    </div>
+                    <div class="options">
+                        <div class="option"><input type="radio" id="q6_1" name="q6" value="1" required><label for="q6_1">1</label></div>
+                        <div class="option"><input type="radio" id="q6_2" name="q6" value="2"><label for="q6_2">2</label></div>
+                        <div class="option"><input type="radio" id="q6_3" name="q6" value="3"><label for="q6_3">3</label></div>
+                        <div class="option"><input type="radio" id="q6_4" name="q6" value="4"><label for="q6_4">4</label></div>
+                        <div class="option"><input type="radio" id="q6_5" name="q6" value="5"><label for="q6_5">5</label></div>
+                    </div>
+                </div>
+
+                <div class="question-block">
+                    <div class="question-text">
+                        <span class="question-number">8</span>
+                        部下や周りの人の成長を促すこと(育成)に、喜びややりがいを感じる
+                    </div>
+                    <div class="options">
+                        <div class="option"><input type="radio" id="q10_1" name="q10" value="1" required><label for="q10_1">1</label></div>
+                        <div class="option"><input type="radio" id="q10_2" name="q10" value="2"><label for="q10_2">2</label></div>
+                        <div class="option"><input type="radio" id="q10_3" name="q10" value="3"><label for="q10_3">3</label></div>
+                        <div class="option"><input type="radio" id="q10_4" name="q10" value="4"><label for="q10_4">4</label></div>
+                        <div class="option"><input type="radio" id="q10_5" name="q10" value="5"><label for="q10_5">5</label></div>
+                    </div>
+                </div>
+
+                <div class="question-block">
+                    <div class="question-text">
+                        <span class="question-number">9</span>
+                        人は間違いをするものだと考え、間違いが見つかったらその都度改善していけばよい(PDCAを回せばよい)と思う
+                    </div>
+                    <div class="options">
+                        <div class="option"><input type="radio" id="q13_1" name="q13" value="1" required><label for="q13_1">1</label></div>
+                        <div class="option"><input type="radio" id="q13_2" name="q13" value="2"><label for="q13_2">2</label></div>
+                        <div class="option"><input type="radio" id="q13_3" name="q13" value="3"><label for="q13_3">3</label></div>
+                        <div class="option"><input type="radio" id="q13_4" name="q13" value="4"><label for="q13_4">4</label></div>
+                        <div class="option"><input type="radio" id="q13_5" name="q13" value="5"><label for="q13_5">5</label></div>
+                    </div>
+                </div>
+
+                <div class="question-block">
+                    <div class="question-text">
+                        <span class="question-number">10</span>
+                        チームでの協働も、一人での集中作業も、どちらも状況に応じて得意だ
+                    </div>
+                    <div class="options">
+                        <div class="option"><input type="radio" id="q17_1" name="q17" value="1" required><label for="q17_1">1</label></div>
+                        <div class="option"><input type="radio" id="q17_2" name="q17" value="2"><label for="q17_2">2</label></div>
+                        <div class="option"><input type="radio" id="q17_3" name="q17" value="3"><label for="q17_3">3</label></div>
+                        <div class="option"><input type="radio" id="q17_4" name="q17" value="4"><label for="q17_4">4</label></div>
+                        <div class="option"><input type="radio" id="q17_5" name="q17" value="5"><label for="q17_5">5</label></div>
+                    </div>
+                </div>
+
+                <div class="question-block">
+                    <div class="question-text">
+                        <span class="question-number">11</span>
+                        成果物を提出する前に、何度も確認する習慣がある
+                    </div>
+                    <div class="options">
+                        <div class="option"><input type="radio" id="q3_1" name="q3" value="1" required><label for="q3_1">1</label></div>
+                        <div class="option"><input type="radio" id="q3_2" name="q3" value="2"><label for="q3_2">2</label></div>
+                        <div class="option"><input type="radio" id="q3_3" name="q3" value="3"><label for="q3_3">3</label></div>
+                        <div class="option"><input type="radio" id="q3_4" name="q3" value="4"><label for="q3_4">4</label></div>
+                        <div class="option"><input type="radio" id="q3_5" name="q3" value="5"><label for="q3_5">5</label></div>
+                    </div>
+                </div>
+
+                <div class="question-block">
+                    <div class="question-text">
+                        <span class="question-number">12</span>
+                        仕事を進める際、全体最適と部分最適のバランスを意識して判断している
+                    </div>
+                    <div class="options">
+                        <div class="option"><input type="radio" id="q7_1" name="q7" value="1" required><label for="q7_1">1</label></div>
+                        <div class="option"><input type="radio" id="q7_2" name="q7" value="2"><label for="q7_2">2</label></div>
+                        <div class="option"><input type="radio" id="q7_3" name="q7" value="3"><label for="q7_3">3</label></div>
+                        <div class="option"><input type="radio" id="q7_4" name="q7" value="4"><label for="q7_4">4</label></div>
+                        <div class="option"><input type="radio" id="q7_5" name="q7" value="5"><label for="q7_5">5</label></div>
+                    </div>
+                </div>
+
+                <div class="question-block">
+                    <div class="question-text">
+                        <span class="question-number">13</span>
+                        上司や部下、周囲からの評価を意識しながら仕事を進める方だ
+                    </div>
+                    <div class="options">
+                        <div class="option"><input type="radio" id="q11_1" name="q11" value="1" required><label for="q11_1">1</label></div>
+                        <div class="option"><input type="radio" id="q11_2" name="q11" value="2"><label for="q11_2">2</label></div>
+                        <div class="option"><input type="radio" id="q11_3" name="q11" value="3"><label for="q11_3">3</label></div>
+                        <div class="option"><input type="radio" id="q11_4" name="q11" value="4"><label for="q11_4">4</label></div>
+                        <div class="option"><input type="radio" id="q11_5" name="q11" value="5"><label for="q11_5">5</label></div>
+                    </div>
+                </div>
+
+                <div class="question-block">
+                    <div class="question-text">
+                        <span class="question-number">14</span>
+                        RPAやAIなどの新しいツールの活用・導入について、積極的に取り組みたいと思う
+                    </div>
+                    <div class="options">
+                        <div class="option"><input type="radio" id="q14_1" name="q14" value="1" required><label for="q14_1">1</label></div>
+                        <div class="option"><input type="radio" id="q14_2" name="q14" value="2"><label for="q14_2">2</label></div>
+                        <div class="option"><input type="radio" id="q14_3" name="q14" value="3"><label for="q14_3">3</label></div>
+                        <div class="option"><input type="radio" id="q14_4" name="q14" value="4"><label for="q14_4">4</label></div>
+                        <div class="option"><input type="radio" id="q14_5" name="q14" value="5"><label for="q14_5">5</label></div>
+                    </div>
+                </div>
+
+                <div class="question-block">
+                    <div class="question-text">
+                        <span class="question-number">15</span>
+                        複数の業務を同時並行で進めながら、優先順位を調整することが得意だ
+                    </div>
+                    <div class="options">
+                        <div class="option"><input type="radio" id="q18_1" name="q18" value="1" required><label for="q18_1">1</label></div>
+                        <div class="option"><input type="radio" id="q18_2" name="q18" value="2"><label for="q18_2">2</label></div>
+                        <div class="option"><input type="radio" id="q18_3" name="q18" value="3"><label for="q18_3">3</label></div>
+                        <div class="option"><input type="radio" id="q18_4" name="q18" value="4"><label for="q18_4">4</label></div>
+                        <div class="option"><input type="radio" id="q18_5" name="q18" value="5"><label for="q18_5">5</label></div>
+                    </div>
+                </div>
+
+                <div class="question-block">
+                    <div class="question-text">
+                        <span class="question-number">16</span>
+                        仕事は、チームで進めるよりも一人で集中して取り組む方が好きだ
+                    </div>
+                    <div class="options">
+                        <div class="option"><input type="radio" id="q4_1" name="q4" value="1" required><label for="q4_1">1</label></div>
+                        <div class="option"><input type="radio" id="q4_2" name="q4" value="2"><label for="q4_2">2</label></div>
+                        <div class="option"><input type="radio" id="q4_3" name="q4" value="3"><label for="q4_3">3</label></div>
+                        <div class="option"><input type="radio" id="q4_4" name="q4" value="4"><label for="q4_4">4</label></div>
+                        <div class="option"><input type="radio" id="q4_5" name="q4" value="5"><label for="q4_5">5</label></div>
+                    </div>
+                </div>
+
+                <div class="question-block">
+                    <div class="question-text">
+                        <span class="question-number">17</span>
+                        新しい会計基準の適用や事業再編などで新しい知識の習得が必要になったとき、自己成長のチャンスだと前向きに捉えられる
+                    </div>
+                    <div class="options">
+                        <div class="option"><input type="radio" id="q8_1" name="q8" value="1" required><label for="q8_1">1</label></div>
+                        <div class="option"><input type="radio" id="q8_2" name="q8" value="2"><label for="q8_2">2</label></div>
+                        <div class="option"><input type="radio" id="q8_3" name="q8" value="3"><label for="q8_3">3</label></div>
+                        <div class="option"><input type="radio" id="q8_4" name="q8" value="4"><label for="q8_4">4</label></div>
+                        <div class="option"><input type="radio" id="q8_5" name="q8" value="5"><label for="q8_5">5</label></div>
+                    </div>
+                </div>
+
+                <div class="question-block">
+                    <div class="question-text">
+                        <span class="question-number">18</span>
+                        プロジェクトでメンバーの意見を調整し、合意形成することが得意だ
+                    </div>
+                    <div class="options">
+                        <div class="option"><input type="radio" id="q19_1" name="q19" value="1" required><label for="q19_1">1</label></div>
+                        <div class="option"><input type="radio" id="q19_2" name="q19" value="2"><label for="q19_2">2</label></div>
+                        <div class="option"><input type="radio" id="q19_3" name="q19" value="3"><label for="q19_3">3</label></div>
+                        <div class="option"><input type="radio" id="q19_4" name="q19" value="4"><label for="q19_4">4</label></div>
+                        <div class="option"><input type="radio" id="q19_5" name="q19" value="5"><label for="q19_5">5</label></div>
+                    </div>
+                </div>
+
+                <div class="question-block">
+                    <div class="question-text">
+                        <span class="question-number">19</span>
+                        従来のやり方よりも、効率的で新しい方法を試すことに興味がある
+                    </div>
+                    <div class="options">
+                        <div class="option"><input type="radio" id="q15_1" name="q15" value="1" required><label for="q15_1">1</label></div>
+                        <div class="option"><input type="radio" id="q15_2" name="q15" value="2"><label for="q15_2">2</label></div>
+                        <div class="option"><input type="radio" id="q15_3" name="q15" value="3"><label for="q15_3">3</label></div>
+                        <div class="option"><input type="radio" id="q15_4" name="q15" value="4"><label for="q15_4">4</label></div>
+                        <div class="option"><input type="radio" id="q15_5" name="q15" value="5"><label for="q15_5">5</label></div>
+                    </div>
+                </div>
+
+                <div class="question-block">
+                    <div class="question-text">
+                        <span class="question-number">20</span>
+                        想定外の事態が起きても、冷静に対処できる方だ
+                    </div>
+                    <div class="options">
+                        <div class="option"><input type="radio" id="q20_1" name="q20" value="1" required><label for="q20_1">1</label></div>
+                        <div class="option"><input type="radio" id="q20_2" name="q20" value="2"><label for="q20_2">2</label></div>
+                        <div class="option"><input type="radio" id="q20_3" name="q20" value="3"><label for="q20_3">3</label></div>
+                        <div class="option"><input type="radio" id="q20_4" name="q20" value="4"><label for="q20_4">4</label></div>
+                        <div class="option"><input type="radio" id="q20_5" name="q20" value="5"><label for="q20_5">5</label></div>
+                    </div>
+                </div>
+
+                <div class="submit-container">
+                    <button type="submit" class="submit-btn">診断結果を見る</button>
+                    <div class="error-message" id="errorMessage">
+                        すべての質問に回答してください。
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div id="resultSection" class="result-section">
+            <div class="result-header">
+                <div class="character-image" id="characterImageContainer">
+                    <div class="character-emoji" id="characterEmoji"></div>
+                </div>
+                <h2>あなたのタイプは</h2>
+                <div class="type-name" id="resultTypeName"></div>
+                <div class="type-tagline" id="resultTagline"></div>
+                <div class="image-note">
+                    ※キャラクター画像は別途ダウンロードして「images」フォルダに配置してください
+                </div>
+            </div>
+
+            <div class="result-content">
+                <div class="score-breakdown" id="scoreBreakdown"></div>
+
+                <div class="result-section-box">
+                    <h3>📊 あなたの特徴</h3>
+                    <p id="resultDescription"></p>
+                </div>
+
+                <div class="result-section-box">
+                    <h3>✨ 適性業務</h3>
+                    <ul id="resultJobs"></ul>
+                </div>
+
+                <div class="result-section-box">
+                    <h3>💡 強みの活かし方</h3>
+                    <p id="resultStrengths"></p>
+                </div>
+
+                <div class="result-section-box">
+                    <h3>🚀 キャリアの可能性</h3>
+                    <p id="resultCareer"></p>
+                </div>
+
+                <button class="retry-btn" onclick="location.reload()">もう一度診断する</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const typeData = {
+            A: {
+                name: "正確性の番人型",
+                icon: "🎯",
+                emoji: "🎯",
+                characterImage: "images/typeA.png",
+                tagline: "細部まで正確に、信頼の礎を築く",
+                description: "ルーティン業務を着実にこなし、ミスゼロを当たり前として業務に取り組むあなた。何度も確認する慎重さで、組織の信頼性を支えています。一人で集中して仕事を進めることで、高い品質を実現するタイプです。",
+                jobs: [
+                    "月次・年次決算業務",
+                    "税務申告書作成",
+                    "監査法人対応",
+                    "証憑管理・帳簿記帳",
+                    "内部統制チェック"
+                ],
+                strengths: "決算業務のリーダーや品質管理担当として、経理部門の「正確性の基準」を組織に浸透させる役割が最適です。業務マニュアル作成や新人指導でも力を発揮できます。",
+                career: "決算チームのリーダー、内部監査担当、経理部門の品質管理責任者など、正確性が最重視されるポジションで活躍できます。"
+            },
+            B: {
+                name: "戦略提案型",
+                icon: "💡",
+                emoji: "💡",
+                characterImage: "images/typeB.png",
+                tagline: "数字から戦略を描く、経営のパートナー",
+                description: "数字の背景にある実態を意識し、そこから新しい提案や提言をしたくなるあなた。全体最適と部分最適のバランスを考え、新しい知識の習得も前向きに捉える戦略思考の持ち主です。",
+                jobs: [
+                    "財務分析・経営分析",
+                    "予算策定・管理",
+                    "中期経営計画の策定支援",
+                    "IR業務",
+                    "M&A・事業再編の財務支援"
+                ],
+                strengths: "財務企画や経営企画に近いポジションで、CFOの右腕として活躍できます。経営層への提案力を磨き、戦略的な意思決定を支援する役割が向いています。",
+                career: "財務企画マネージャー、経営企画担当、CFO候補など、戦略的な意思決定に関わるポジションで力を発揮できます。"
+            },
+            C: {
+                name: "チームリーダー型",
+                icon: "🤝",
+                emoji: "🤝",
+                characterImage: "images/typeC.png",
+                tagline: "人と組織をつなぎ、成長を促す",
+                description: "他部署との連携にストレスを感じず、むしろ人の成長を促すことに喜びを感じるあなた。周囲からの評価を意識しながらコミュニケーションを調整し、チームを円滑に動かすことができます。プロジェクトでの合意形成も得意です。",
+                jobs: [
+                    "経理チームのマネジメント",
+                    "プロジェクトリーダー",
+                    "部門間調整役",
+                    "新人・若手の教育担当",
+                    "システム導入プロジェクトの推進"
+                ],
+                strengths: "経理課長やマネージャーとして、チームをまとめる役割が最適です。部門横断プロジェクトのリーダーや、組織の人材育成を担う立場で力を発揮できます。",
+                career: "経理課長・マネージャー、プロジェクトマネージャー、経理部長候補など、人と組織を動かすポジションで活躍できます。"
+            },
+            D: {
+                name: "改革イノベーター型",
+                icon: "⚡",
+                emoji: "⚡",
+                characterImage: "images/typeD.png",
+                tagline: "変化を恐れず、未来を創る",
+                description: "現状の業務プロセスに改善余地がないか常に考え、RPA/AIなどの新しいツールにも積極的なあなた。完璧を目指すより、PDCAを回して改善していく実践派です。従来のやり方にとらわれず、効率的な新しい方法を試すことに興味があります。",
+                jobs: [
+                    "業務プロセス改善",
+                    "RPA/AI導入推進",
+                    "経理DXプロジェクト",
+                    "会計システムの刷新",
+                    "業務フローの再設計"
+                ],
+                strengths: "業務改善やDX推進の担当者として、組織に変革をもたらす役割が向いています。新しい技術やツールを積極的に取り入れ、経理部門の効率化を牽引できます。",
+                career: "DX推進担当、業務改善リーダー、経理システム責任者など、変革と革新を推進するポジションで力を発揮できます。"
+            },
+            E: {
+                name: "バランス調整型",
+                icon: "🌟",
+                emoji: "🌟",
+                characterImage: "images/typeE.png",
+                tagline: "臨機応変に、組織の要として活躍",
+                description: "ルーティンも変化対応も柔軟にこなし、チームでも一人でも状況に応じて力を発揮できるあなた。複数業務を同時並行で進めながら優先順位を調整でき、想定外の事態にも冷静に対処できるオールラウンダーです。",
+                jobs: [
+                    "複数プロジェクトの管理",
+                    "経理部長・マネージャー",
+                    "新規事業の経理立ち上げ",
+                    "危機対応・イレギュラー対応",
+                    "組織横断の調整役"
+                ],
+                strengths: "管理職として組織全体を俯瞰し、状況に応じて適切な判断を下す役割が最適です。想定外の事態にも冷静に対処でき、組織の安定と成長を両立させられます。",
+                career: "経理部長、CFO候補、事業部経理責任者など、組織全体を見渡し、バランスを取るポジションで活躍できます。"
+            }
+        };
+
+        // 質問とタイプの対応マッピング
+        const questionMapping = {
+            q1: 'A', q2: 'A', q3: 'A', q4: 'A',
+            q5: 'B', q6: 'B', q7: 'B', q8: 'B',
+            q9: 'C', q10: 'C', q11: 'C', q19: 'C',
+            q12: 'D', q13: 'D', q14: 'D', q15: 'D',
+            q16: 'E', q17: 'E', q18: 'E', q20: 'E'
+        };
+
+        document.getElementById('diagnosticForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            console.log('フォーム送信開始');
+            
+            const formData = new FormData(this);
+            const scores = { A: 0, B: 0, C: 0, D: 0, E: 0 };
+            
+            // 全質問に回答済みかチェック
+            let allAnswered = true;
+            let answeredCount = 0;
+            for (let question in questionMapping) {
+                const value = formData.get(question);
+                if (!value) {
+                    allAnswered = false;
+                    console.log('未回答の質問: ' + question);
+                } else {
+                    answeredCount++;
+                }
+            }
+            
+            console.log('回答数: ' + answeredCount + '/20');
+            
+            if (!allAnswered) {
+                document.getElementById('errorMessage').style.display = 'block';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                return false;
+            }
+            
+            // スコア計算
+            for (let [question, type] of Object.entries(questionMapping)) {
+                const value = parseInt(formData.get(question));
+                scores[type] += value;
+            }
+            
+            console.log('スコア計算完了:', scores);
+            
+            // 最高得点のタイプを特定
+            let maxScore = 0;
+            let resultType = '';
+            for (let [type, score] of Object.entries(scores)) {
+                if (score > maxScore) {
+                    maxScore = score;
+                    resultType = type;
+                }
+            }
+            
+            console.log('診断結果タイプ: ' + resultType);
+            
+            // 結果表示
+            displayResult(resultType, scores);
+            
+            return false;
+        }, false);
+
+        function displayResult(resultType, scores) {
+            console.log('displayResult実行開始: ' + resultType);
+            const data = typeData[resultType];
+            
+            if (!data) {
+                console.error('タイプデータが見つかりません: ' + resultType);
+                return;
+            }
+            
+            // 絵文字を表示(画像の代わり)
+            const emojiElement = document.getElementById('characterEmoji');
+            if (emojiElement) {
+                emojiElement.textContent = data.emoji;
+                console.log('絵文字設定完了: ' + data.emoji);
+            }
+            
+            document.getElementById('resultTypeName').textContent = data.name;
+            document.getElementById('resultTagline').textContent = data.tagline;
+            
+            // スコア内訳
+            const scoreBreakdown = document.getElementById('scoreBreakdown');
+            scoreBreakdown.innerHTML = '';
+            for (let [type, score] of Object.entries(scores)) {
+                const scoreItem = document.createElement('div');
+                scoreItem.className = 'score-item' + (type === resultType ? ' top-score' : '');
+                scoreItem.innerHTML = `
+                    <div class="score-item-label">${typeData[type].icon} ${typeData[type].name}</div>
+                    <div class="score-item-value">${score}<span class="score-item-max">/20</span></div>
+                `;
+                scoreBreakdown.appendChild(scoreItem);
+            }
+            
+            // 詳細情報
+            document.getElementById('resultDescription').textContent = data.description;
+            
+            const jobsList = document.getElementById('resultJobs');
+            jobsList.innerHTML = '';
+            data.jobs.forEach(job => {
+                const li = document.createElement('li');
+                li.textContent = job;
+                jobsList.appendChild(li);
+            });
+            
+            document.getElementById('resultStrengths').textContent = data.strengths;
+            document.getElementById('resultCareer').textContent = data.career;
+            
+            // セクション切り替え
+            const questionSection = document.getElementById('questionSection');
+            const resultSection = document.getElementById('resultSection');
+            
+            if (questionSection && resultSection) {
+                questionSection.style.display = 'none';
+                resultSection.style.display = 'block';
+                console.log('セクション切り替え完了');
+            } else {
+                console.error('セクション要素が見つかりません');
+            }
+            
+            // トップにスクロール
+            setTimeout(function() {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }, 100);
+        }
+    </script>
+</body>
+</html>
